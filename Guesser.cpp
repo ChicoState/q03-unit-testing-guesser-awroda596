@@ -5,7 +5,7 @@ using std::string;
 
 /*
   Returns an whole number representing the distance between the guess,
-  provided as an argument, and the secret. The distance represents the number
+  providedas an argument, and the secret. The distance represents the number
   of characters that would have to be changed at the same location to match
   the other string. When the two strings are identical, the distance is 0,
   but for each letter different, the distance increases by 1. When the
@@ -15,7 +15,23 @@ using std::string;
   has 100, the distance is 10.
 */
 unsigned int Guesser::distance(string guess){
-  return 0;
+  int distance = 0; 
+  distance += abs(m_secret.length() - m_secret.length()); 
+  for(int i = 0; i < m_secret.length(); i++){
+    if(i >= guess.length())
+    {
+      break;  //break early if shorter than secret.  
+    }
+    if(guess[i] != m_secret[i]){
+      distance++; 
+    }
+    if (distance >= m_secret.length()){ 
+     distance = m_secret.length(); 
+     break;  
+    }
+  }
+
+  return distance;
 }
 
 /*
@@ -25,7 +41,12 @@ unsigned int Guesser::distance(string guess){
   otherwise, it will be truncated at that length.
 */
 Guesser::Guesser(string secret){
-
+  locked == false; 
+  m_remaining = 3; 
+  if(secret.length()>32){
+    secret = secret.substr(0,32);
+  }
+  m_secret = secret; 
 }
 
 /*
@@ -40,7 +61,20 @@ Guesser::Guesser(string secret){
   and the secret.
 */
 bool Guesser::match(string guess){
-  return true;
+  if ( remaining() <= 0 || locked == true){ //return false if locked or out of guesses
+    return false; 
+  }
+  int d = distance(guess); //get distance
+  if(d == 0){  //if matched return true
+    m_remaining = 3; 
+    return true; 
+  }
+  //else return false and decrement the guess remaining.  also lock if brute force detected
+  if(d > 2){
+    locked = true; 
+  }
+  m_remaining--; 
+  return false;
 }
 
 /*
@@ -51,6 +85,6 @@ bool Guesser::match(string guess){
   reset to three (3).
 */
 unsigned int Guesser::remaining(){
-  return 0;
+  return m_remaining;
 }
 
